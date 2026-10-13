@@ -74,3 +74,69 @@ year={2021}
 Source data of BloodMNIST: Acevedo, A., Merino, A., Alferez, S., Molina, A., Boldu, L., Rodellar, J. "A dataset of microscopic peripheral blood cell images for development of automatic recognition systems." Data in Brief, vol. 30, 105474, 2020. DOI: 10.1016/j.dib.2020.105474.
 
 Note: the original images are 360 x 363 pixels; MedMNIST provides them downsampled to 28 x 28. MedMNIST is not intended for clinical use, and neither is this project.
+
+## Findings
+
+Test set (3,421 images), used once at the end. The CNN is the mean +/- standard deviation over 5 seeds (30 epochs, best epoch chosen on validation).
+
+| Model | Test accuracy | Test macro-F1 |
+|---|---|---|
+| Majority class | 0.195 | 0.041 |
+| Logistic regression (raw pixels) | 0.778 | 0.748 |
+| Random forest (raw pixels) | 0.837 | 0.809 |
+| CNN (5 seeds) | 0.916 +/- 0.006 | 0.901 +/- 0.008 |
+
+- The CNN is clearly better than the pixel baselines on this test set. Its weakest seed (macro-F1 0.887) is still above the random forest (0.809). This holds for these specific models only; other architectures or tuned baselines were not tried.
+- Validation macro-F1 of the final 5 CNNs was 0.912 +/- 0.005, and test macro-F1 was 0.901. The small drop is expected because the epoch was chosen on validation.
+- Going from 15 to 30 epochs improved validation macro-F1 in 5 of 5 seeds (mean gain 0.037, larger than the seed standard deviation of 0.008), following a rule fixed before looking at the result.
+
+Per-class test F1 of the final CNNs (mean +/- std over 5 seeds):
+
+| Class | F1 |
+|---|---|
+| platelet | 0.998 +/- 0.002 |
+| eosinophil | 0.981 +/- 0.003 |
+| neutrophil | 0.964 +/- 0.004 |
+| erythroblast | 0.927 +/- 0.008 |
+| lymphocyte | 0.887 +/- 0.008 |
+| monocyte | 0.824 +/- 0.024 |
+| immature granulocytes | 0.823 +/- 0.011 |
+| basophil | 0.801 +/- 0.028 |
+
+![Test confusion matrix](figures/confusion_matrix_test.png)
+
+The largest confusions on the test set (share of the true class, 5 seeds summed): monocyte predicted as immature granulocytes 14.0%, basophil as immature granulocytes 12.7%, lymphocyte as immature granulocytes 6.1%, basophil as monocyte 6.0%, erythroblast as immature granulocytes 4.5%, immature granulocytes as monocyte 4.5%. Four of the six largest confusions end in the immature granulocytes class. The reasons for these confusions were not investigated, so no cause is claimed here.
+
+Earlier exploratory figures (`figures/training_curves.png`, `figures/confusion_matrix_val.png`) come from a single run (seed 42, 15 epochs) on the validation set.
+
+## Limitations
+
+- Images are only 28 x 28 pixels (downsampled from 360 x 363), so fine cell details are lost. Results may not transfer to full-resolution images.
+- One dataset from one source. According to the source paper, the images are of normal cells from healthy individuals, acquired at one hospital laboratory with one analyzer. Performance on other labs, devices or abnormal cells is unknown.
+- This is a benchmark exercise, not a clinical tool, and it should not be used for diagnosis.
+- Baselines were fitted once with default-style settings and were not tuned, so they have no standard deviation. Logistic regression (`max_iter=100`) did not converge, so it is probably weaker than a fully trained version.
+- For most final CNN seeds, the best epoch was 29 or 30, so training had probably not finished improving. Longer training was not tested, to respect the rule of no tuning after the test result.
+- Choosing the best epoch on validation makes the validation numbers slightly optimistic. The test numbers are the cleaner estimate.
+- GPU training is not perfectly repeatable: the same 30-epoch code and seeds gave a validation macro-F1 mean of 0.908 in one run and 0.912 in another.
+- Seed variation is visible (test macro-F1 from 0.887 to 0.905); the reason for the lowest seed was not investigated.
+- The weakest classes (basophil, monocyte, immature granulocytes) also vary most between seeds for basophil and monocyte. Only one small CNN architecture, without augmentation, was tested.
+- The per-class test results were computed after the overall test result, from the same saved weights. No model, epoch or setting was changed after seeing any test result.
+
+## Future work
+
+Not tested yet, so no result is claimed:
+
+- Longer training or a learning-rate schedule, since the best epoch was near the last one.
+- Data augmentation and other architectures (for example a deeper CNN).
+- Larger image sizes: the MedMNIST package also provides larger versions of the datasets.
+- Several seeds for the baselines, to get their variation.
+- Looking at the images that the CNN confuses between monocyte, basophil and immature granulocytes.
+- Testing on a different blood cell dataset.
+
+## How to run
+
+1. Open `notebooks/bloodmnist_cell_classification.ipynb` on Kaggle (Internet on, GPU on).
+2. Run the cells in order from the top. The first cell installs the `medmnist` package (version 3.0.2 was used); the data is downloaded automatically.
+3. The cells that save weights write to `/kaggle/working/weights`. These weight files are not in this repository.
+4. The test-set cells should be run only once, at the very end, after all choices are finished.
+5. Numbers can differ slightly on re-runs because GPU training is not perfectly repeatable. The numbers in this README come from the saved notebook output.
