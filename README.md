@@ -45,3 +45,32 @@ Python, PyTorch, scikit-learn, NumPy, pandas, matplotlib, the `medmnist` package
 - The test set (3,421 images) was used once at the end for all final models.
 - For the CNN, results are the mean and standard deviation (sample standard deviation) over the 5 seeds. The baselines were fitted once, so they have no standard deviation.
 - GPU training is not perfectly repeatable: re-running the same 30-epoch code with the same seeds gave a validation macro-F1 mean of 0.908 (first run) and 0.912 (second run, whose weights were saved and used for the test set).
+
+## Citation and acknowledgements
+
+This project uses the MedMNIST v2 collection (BloodMNIST subset, CC BY 4.0). Following the MedMNIST authors' request, both MedMNIST papers are cited, together with the paper of the source data:
+
+```bibtex
+@article{medmnistv2,
+title={MedMNIST v2-A large-scale lightweight benchmark for 2D and 3D biomedical image classification},
+author={Yang, Jiancheng and Shi, Rui and Wei, Donglai and Liu, Zequan and Zhao, Lin and Ke, Bilian and Pfister, Hanspeter and Ni, Bingbing},
+journal={Scientific Data},
+volume={10},
+number={1},
+pages={41},
+year={2023},
+publisher={Nature Publishing Group UK London}
+}
+
+@inproceedings{medmnistv1,
+title={MedMNIST Classification Decathlon: A Lightweight AutoML Benchmark for Medical Image Analysis},
+author={Yang, Jiancheng and Shi, Rui and Ni, Bingbing},
+booktitle={IEEE 18th International Symposium on Biomedical Imaging (ISBI)},
+pages={191--195},
+year={2021}
+}
+```
+
+Source data of BloodMNIST: Acevedo, A., Merino, A., Alferez, S., Molina, A., Boldu, L., Rodellar, J. "A dataset of microscopic peripheral blood cell images for development of automatic recognition systems." Data in Brief, vol. 30, 105474, 2020. DOI: 10.1016/j.dib.2020.105474.
+
+Note: the original images are 360 x 363 pixels; MedMNIST provides them downsampled to 28 x 28. MedMNIST is not intended for clinical use, and neither is this project.
