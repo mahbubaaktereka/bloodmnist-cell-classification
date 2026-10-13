@@ -119,7 +119,7 @@ Earlier exploratory figures (`figures/training_curves.png`, `figures/confusion_m
 - Choosing the best epoch on validation makes the validation numbers slightly optimistic. The test numbers are the cleaner estimate.
 - GPU training is not perfectly repeatable: the same 30-epoch code and seeds gave a validation macro-F1 mean of 0.908 in one run and 0.912 in another.
 - Seed variation is visible (test macro-F1 from 0.887 to 0.905); the reason for the lowest seed was not investigated.
-- The weakest classes (basophil, monocyte, immature granulocytes) also vary most between seeds for basophil and monocyte. Only one small CNN architecture, without augmentation, was tested.
+- Basophil and monocyte also vary the most between seeds (std 0.028 and 0.024). Only one small CNN architecture, without augmentation, was tested.
 - The per-class test results were computed after the overall test result, from the same saved weights. No model, epoch or setting was changed after seeing any test result.
 
 ## Future work
