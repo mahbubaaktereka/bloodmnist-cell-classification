@@ -51,14 +51,11 @@ Seed variation was visible (test macro-F1 from 0.887 to 0.905), so a single run 
 
 ## 6. Limitations
 
-- The images are only 28 x 28 pixels, so fine details are lost.
-- One dataset from one laboratory and one analyzer, with normal cells only; performance elsewhere is unknown.
-- Baselines were not tuned and were fitted once (no variation estimate); logistic regression did not converge.
-- For most final seeds the best epoch was 29 or 30, so training was probably not finished. I did not train longer, to keep the rule of no tuning after seeing test results.
-- Only one small architecture without augmentation was tested.
-- Per-class test results were computed after the overall test result, from the same saved weights; nothing was changed afterwards.
-- This is a benchmark exercise and must not be used for diagnosis.
-
+1. **Data.** The images are only 28 x 28 pixels (downsampled from 360 x 363), so fine details are lost. It is one dataset from one hospital laboratory and one analyzer, with normal cells only (according to the source paper). Performance on other labs, devices, full-resolution images or abnormal cells is unknown.
+2. **Model.** Only one small CNN without augmentation was tested. For most final seeds the best epoch was 29 or 30, so training had probably not finished improving. I did not train longer, to keep the rule of no tuning after seeing test results.
+3. **Baselines.** The baselines were not tuned and were fitted once, so they have no variation estimate. Logistic regression (`max_iter=100`) did not converge, so it is probably weaker than a fully trained version.
+4. **Variation and reporting.** Test macro-F1 ranged from 0.887 to 0.905 across seeds, and basophil and monocyte vary the most (std 0.028 and 0.024). GPU training is not perfectly repeatable: the same 30-epoch code gave a validation macro-F1 mean of 0.908 in one run and 0.912 in another. Validation numbers are slightly optimistic because the epoch was chosen on validation, so the test numbers are the cleaner estimate. Per-class test results were computed after the overall test result from the same saved weights; nothing was changed afterwards. The reasons for the confusions between classes were not investigated.
+5. **Use.** This is a benchmark exercise on public data, not a clinical tool, and it must not be used for diagnosis.
 ## 7. Conclusion
 
 A small CNN clearly beats simple pixel baselines on BloodMNIST, with a test macro-F1 of 0.901 +/- 0.008 over 5 seeds. The remaining errors are concentrated in basophil, monocyte and immature granulocytes. Future work: longer training, augmentation and other architectures, larger image sizes, multiple seeds for the baselines, inspecting the confused images, and testing on another blood cell dataset.

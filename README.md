@@ -111,17 +111,11 @@ Earlier exploratory figures (`figures/training_curves.png`, `figures/confusion_m
 
 ## Limitations
 
-- Images are only 28 x 28 pixels (downsampled from 360 x 363), so fine cell details are lost. Results may not transfer to full-resolution images.
-- One dataset from one source. According to the source paper, the images are of normal cells from healthy individuals, acquired at one hospital laboratory with one analyzer. Performance on other labs, devices or abnormal cells is unknown.
-- This is a benchmark exercise, not a clinical tool, and it should not be used for diagnosis.
-- Baselines were fitted once with default-style settings and were not tuned, so they have no standard deviation. Logistic regression (`max_iter=100`) did not converge, so it is probably weaker than a fully trained version.
-- For most final CNN seeds, the best epoch was 29 or 30, so training had probably not finished improving. Longer training was not tested, to respect the rule of no tuning after the test result.
-- Choosing the best epoch on validation makes the validation numbers slightly optimistic. The test numbers are the cleaner estimate.
-- GPU training is not perfectly repeatable: the same 30-epoch code and seeds gave a validation macro-F1 mean of 0.908 in one run and 0.912 in another.
-- Seed variation is visible (test macro-F1 from 0.887 to 0.905); the reason for the lowest seed was not investigated.
-- Basophil and monocyte also vary the most between seeds (std 0.028 and 0.024). Only one small CNN architecture, without augmentation, was tested.
-- The per-class test results were computed after the overall test result, from the same saved weights. No model, epoch or setting was changed after seeing any test result.
-
+1. **Data.** The images are only 28 x 28 pixels (downsampled from 360 x 363), so fine details are lost. It is one dataset from one hospital laboratory and one analyzer, with normal cells only (according to the source paper). Performance on other labs, devices, full-resolution images or abnormal cells is unknown.
+2. **Model.** Only one small CNN without augmentation was tested. For most final seeds the best epoch was 29 or 30, so training had probably not finished improving. I did not train longer, to keep the rule of no tuning after seeing test results.
+3. **Baselines.** The baselines were not tuned and were fitted once, so they have no variation estimate. Logistic regression (`max_iter=100`) did not converge, so it is probably weaker than a fully trained version.
+4. **Variation and reporting.** Test macro-F1 ranged from 0.887 to 0.905 across seeds, and basophil and monocyte vary the most (std 0.028 and 0.024). GPU training is not perfectly repeatable: the same 30-epoch code gave a validation macro-F1 mean of 0.908 in one run and 0.912 in another. Validation numbers are slightly optimistic because the epoch was chosen on validation, so the test numbers are the cleaner estimate. Per-class test results were computed after the overall test result from the same saved weights; nothing was changed afterwards. The reasons for the confusions between classes were not investigated.
+5. **Use.** This is a benchmark exercise on public data, not a clinical tool, and it must not be used for diagnosis.
 ## Future work
 
 Not tested yet, so no result is claimed:
