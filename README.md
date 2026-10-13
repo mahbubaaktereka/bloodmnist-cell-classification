@@ -23,3 +23,25 @@ Given a 28x28 RGB image of a single blood cell, predict its type (8 classes: bas
 ## Tools
 
 Python, PyTorch, scikit-learn, NumPy, pandas, matplotlib, the `medmnist` package. Run on Kaggle notebooks with a GPU.
+
+## Methodology
+
+1. Baselines: majority class, logistic regression (`max_iter=100`) and random forest (200 trees, `random_state=42`), all fitted on raw pixels of the training set only.
+2. CNN: three convolution layers (16, 32, 64 filters, 3x3, ReLU, max-pooling) followed by two fully connected layers (576 -> 64 -> 8), 61,032 trainable parameters. Adam optimizer, learning rate 1e-3, batch size 128, no data augmentation.
+3. The CNN was trained with 5 different random seeds (0-4). For each seed, the epoch with the best validation macro-F1 was kept.
+4. Number of epochs: 15 and 30 were compared on the validation set. The rule was fixed before looking at the result: count the gain only if 30 epochs is better in most seeds and the mean gain is larger than the seed standard deviation of the 15-epoch runs (0.008). Result: 30 epochs was better in 5 of 5 seeds, mean gain 0.037, so 30 epochs was used.
+5. The final 5 models were retrained with 30 epochs, their best-epoch weights were saved, and these exact weights were evaluated on the test set once. No tuning was done after seeing test results.
+
+## Preprocessing
+
+- Baselines: each image is flattened into 2,352 values (28 x 28 x 3) and divided by 255.
+- CNN: images are converted to tensors and normalised with mean 0.5 and standard deviation 0.5 per channel.
+- No augmentation and no resizing.
+
+## Evaluation
+
+- Metrics: accuracy and macro-F1 (the average of the F1 score of each class, so small classes count as much as large ones).
+- All choices (number of epochs, best epoch) were made on the validation set.
+- The test set (3,421 images) was used once at the end for all final models.
+- For the CNN, results are the mean and standard deviation (sample standard deviation) over the 5 seeds. The baselines were fitted once, so they have no standard deviation.
+- GPU training is not perfectly repeatable: re-running the same 30-epoch code with the same seeds gave a validation macro-F1 mean of 0.908 (first run) and 0.912 (second run, whose weights were saved and used for the test set).
